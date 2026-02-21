@@ -253,16 +253,16 @@ local function ApplyThicknessToFocusFrame(self)
 
     local classification = UnitClassification("focus")
     if (classification == "worldboss" or classification == "elite") then
-        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\Lorti-UI-Classic\\textures\\target\\Thick-Elite")
+        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-TargetingFrame-Elite")
         FocusFrame.borderTexture:SetVertexColor(1, 1, 1)
     elseif (classification == "rareelite") then
-        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\Lorti-UI-Classic\\textures\\target\\Thick-Rare-Elite")
+        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-TargetingFrame-Rare-Elite")
         FocusFrame.borderTexture:SetVertexColor(1, 1, 1)
     elseif (classification == "rare") then
-        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\Lorti-UI-Classic\\textures\\target\\Thick-Rare")
+        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-TargetingFrame-Rare")
         FocusFrame.borderTexture:SetVertexColor(1, 1, 1)
     else
-        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\Lorti-UI-Classic\\textures\\unitframes\\UI-TargetingFrame")
+        FocusFrame.borderTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-TargetingFrame")
         FocusFrame.borderTexture:SetVertexColor(0.05, 0.05, 0.05)
     end
 
