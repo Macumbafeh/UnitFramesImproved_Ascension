@@ -19,6 +19,7 @@ Added new slash command for health display.
 <img width="585" height="147" alt="image" src="https://github.com/user-attachments/assets/64229401-9c9b-4e8f-bb39-ad0f507b4aab" />
 
 Short ON + Percent ON + Max ON
+
 <img width="669" height="453" alt="image" src="https://github.com/user-attachments/assets/fb7beff1-2762-4f84-be2d-2cdba3bc49da" />
 
 <img width="614" height="164" alt="image" src="https://github.com/user-attachments/assets/4d1166d8-de94-4f39-955a-9c9c8e22b81f" />
