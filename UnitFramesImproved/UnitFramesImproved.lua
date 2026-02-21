@@ -1,6 +1,6 @@
 -- Credits to stassart on curse.com for suggesting to use InCombatLockdown() checks in the code
 
--- Debug function. Adds message to the chatbox (only visible to the loacl player)
+-- Debug function. Adds message to the chatbox (only visible to the local player)
 function dout(msg)
 	DEFAULT_CHAT_FRAME:AddMessage(msg);
 end
@@ -13,70 +13,88 @@ function tokenize(str)
 	return tbl;
 end
 
+-- Safe initialization of characterSettings (3.3.5 compatible)
+-- CALL THIS FIRST in any function that uses characterSettings
+local function InitCharacterSettings()
+    if not characterSettings then
+        characterSettings = {}
+    end
+    if not characterSettings.StatusText then
+        characterSettings.StatusText = {
+            ShortNumeric = true,
+            ShowPercent = true,
+            ShowMax = true
+        }
+    end
+end
+
+-- Helper: Trim whitespace (3.3.5 compatible - strtrim doesn't exist!)
+local function trim(str)
+    if not str then return "" end
+    return (str:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 -- Create the addon main instance
 local UnitFramesImproved = CreateFrame('Button', 'UnitFramesImproved');
 
+-- REMOVED: Top-level characterSettings.StatusText block (runs too early!)
+
 -- Event listener to make sure we enable the addon at the right time
 function UnitFramesImproved:PLAYER_ENTERING_WORLD()
+    -- Initialize settings FIRST before using them
+    InitCharacterSettings()
+    
 	-- Set some default settings
 	if (characterSettings == nil) then
 		UnitFramesImproved_LoadDefaultSettings();
 	end
 	
 	EnableUnitFramesImproved();
-	
--- Macumba's changes
-BuffFrame:SetScale(1.6)
-
-for i=1,4 do _G["PartyMemberFrame"..i.."HealthBarText"]:SetFont("Fonts\\FRIZQT__.TTF", 7, "OUTLINE")end
-for i=1,4 do _G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("TOP", 20, -13)end
-for i=1,4 do _G["PartyMemberFrame"..i.."ManaBarText"]:SetFont("Fonts\\FRIZQT__.TTF", 7, "OUTLINE")end
-for i=1,4 do _G["PartyMemberFrame"..i]:SetScale(1.6)end
-for i=1,4 do _G["PartyMemberFrame"..i.."Name"]:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")end
-for i=1,4 do _G["PartyMemberFrame"..i.."PVPIcon"]:Hide()end
-
-PlayerPVPIcon:Hide()
-PlayerName:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-PlayerName:SetPoint("CENTER",50,38);
-PlayerFrameHealthBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-PlayerFrameHealthBarText:SetPoint("CENTER", 50, 13);
-PlayerFrameManaBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-PlayerFrameGroupIndicator:Hide()
-
-TargetFrameTextureFrameName:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-TargetFrameTextureFrameName:SetPoint("CENTER",-50,38);
-TargetFrameTextureFrameHealthBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-TargetFrameTextureFrameHealthBarText:SetPoint("CENTER", -50, 13);
-TargetFrameTextureFrameManaBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-TargetFrameSpellBarText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
-
-FocusFrameTextureFrameName:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-FocusFrameTextureFrameName:SetPoint("CENTER",-50,38);
-FocusFrameTextureFrameHealthBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
-FocusFrameTextureFrameHealthBarText:SetPoint("CENTER", -50, 13);
-FocusFrameTextureFrameManaBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    
+    -- Macumba's changes
+    BuffFrame:SetScale(1.6)
+    for i=1,4 do _G["PartyMemberFrame"..i.."HealthBarText"]:SetFont("Fonts\\FRIZQT__.TTF", 7, "OUTLINE")end
+    for i=1,4 do _G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("TOP", 20, -13)end
+    for i=1,4 do _G["PartyMemberFrame"..i.."ManaBarText"]:SetFont("Fonts\\FRIZQT__.TTF", 7, "OUTLINE")end
+    for i=1,4 do _G["PartyMemberFrame"..i]:SetScale(1.6)end
+    for i=1,4 do _G["PartyMemberFrame"..i.."Name"]:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")end
+    for i=1,4 do _G["PartyMemberFrame"..i.."PVPIcon"]:Hide()end
+    PlayerPVPIcon:Hide()
+    PlayerName:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    PlayerName:SetPoint("CENTER",50,38);
+    PlayerFrameHealthBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    PlayerFrameHealthBarText:SetPoint("CENTER", 50, 13);
+    PlayerFrameManaBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    PlayerFrameGroupIndicator:Hide()
+    TargetFrameTextureFrameName:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    TargetFrameTextureFrameName:SetPoint("CENTER",-50,38);
+    TargetFrameTextureFrameHealthBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    TargetFrameTextureFrameHealthBarText:SetPoint("CENTER", -50, 13);
+    TargetFrameTextureFrameManaBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    TargetFrameSpellBarText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
+    FocusFrameTextureFrameName:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    FocusFrameTextureFrameName:SetPoint("CENTER",-50,38);
+    FocusFrameTextureFrameHealthBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
+    FocusFrameTextureFrameHealthBarText:SetPoint("CENTER", -50, 13);
+    FocusFrameTextureFrameManaBarText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE");
 end
 
--- Disable Threat on party frames
+-- Disable Threat on party frames 
 local function DisablePartyFrameFlash()
     for i = 1, MAX_PARTY_MEMBERS do
         local flashTexture = _G["PartyMemberFrame"..i.."Flash"]
         if flashTexture then
             flashTexture:Hide()
-            flashTexture:SetAlpha(0) -- Completely disable visibility
+            flashTexture:SetAlpha(0)
 			for i=1,4 do _G["PartyMemberFrame"..i.."PVPIcon"]:Hide()end
 			PlayerFrameGroupIndicator:Hide()
         end
     end
 end
-
--- Hook to disable it on updates and frame loads
 hooksecurefunc("PartyMemberFrame_UpdateMember", DisablePartyFrameFlash)
 hooksecurefunc("PartyMemberFrame_UpdateArt", DisablePartyFrameFlash)
-
 function PartyMemberFrame_UpdateMemberHealth(self, elapsed)
-    -- Remove or comment out the logic for setting flash visibility
-    _G[self:GetName().."Flash"]:Hide() -- Explicitly hide it
+    _G[self:GetName().."Flash"]:Hide()
 end
 hooksecurefunc("UnitThreatSituation", function(unit)
     if string.find(unit, "party") then
@@ -87,11 +105,13 @@ hooksecurefunc("UnitThreatSituation", function(unit)
     end
 end)
 
--- Event listener to make sure we've loaded our settings and thta we apply them
+-- Event listener for VARIABLES_LOADED
 function UnitFramesImproved:VARIABLES_LOADED()
+    -- Initialize settings FIRST
+    InitCharacterSettings()
+    
 	dout("UnitFramesImproved settings loaded!");
 	
-	-- Set some default settings
 	if (characterSettings == nil) then
 		UnitFramesImproved_LoadDefaultSettings();
 	end
@@ -108,12 +128,19 @@ function UnitFramesImproved:VARIABLES_LOADED()
 end
 
 function UnitFramesImproved_ApplySettings(settings)
+    InitCharacterSettings() -- Safety
 	UnitFramesImproved_SetFrameScale(settings["FrameScale"])
 end
 
 function UnitFramesImproved_LoadDefaultSettings()
 	characterSettings = {}
 	characterSettings["FrameScale"] = "1.0";
+    -- Initialize StatusText defaults here too
+    characterSettings.StatusText = {
+        ShortNumeric = true,
+        ShowPercent = true,
+        ShowMax = true
+    }
 	
 	if not TargetFrame:IsUserPlaced() then
 		TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 36, 0);
@@ -121,29 +148,26 @@ function UnitFramesImproved_LoadDefaultSettings()
 end
 
 function EnableUnitFramesImproved()
-	-- Generic status text hook
+    -- Initialize settings before hooking
+    InitCharacterSettings()
+    
 	hooksecurefunc("TextStatusBar_UpdateTextString", UnitFramesImproved_TextStatusBar_UpdateTextString);
-	
-	-- Hook PlayerFrame functions
 	hooksecurefunc("PlayerFrame_ToPlayerArt", UnitFramesImproved_PlayerFrame_ToPlayerArt);
 	hooksecurefunc("PlayerFrame_ToVehicleArt", UnitFramesImproved_PlayerFrame_ToVehicleArt);
-	
-	-- Hook TargetFrame functions
 	hooksecurefunc("TargetFrame_Update", UnitFramesImproved_TargetFrame_Update);
+	if TargetFrame and TargetFrame:IsVisible() then
+		UnitFramesImproved_TargetFrame_Update(TargetFrame)
+	end
 	hooksecurefunc("TargetFrame_CheckFaction", UnitFramesImproved_TargetFrame_CheckFaction);
 	hooksecurefunc("TargetFrame_CheckClassification", UnitFramesImproved_TargetFrame_CheckClassification);
-	
-	-- BossFrame hooks
 	hooksecurefunc("BossTargetFrame_OnLoad", UnitFramesImproved_BossTargetFrame_Style);
 
-	-- Setup relative layout for targetframe compared to PlayerFrame
 	if not TargetFrame:IsUserPlaced() then
 		if not InCombatLockdown() then 
 			TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 36, 0);
 		end
 	end
 	
-	-- Set up some stylings
 	UnitFramesImproved_Style_PlayerFrame();
 	UnitFramesImproved_BossTargetFrame_Style(Boss1TargetFrame);
 	UnitFramesImproved_BossTargetFrame_Style(Boss2TargetFrame);
@@ -151,9 +175,31 @@ function EnableUnitFramesImproved()
 	UnitFramesImproved_BossTargetFrame_Style(Boss4TargetFrame);
 	UnitFramesImproved_Style_TargetFrame(TargetFrame);
 	UnitFramesImproved_Style_TargetFrame(FocusFrame);
+	
+	-- Register events for tap status updates (fixes gray color delay)
+	local TapStatusFrame = CreateFrame("Frame")
+	TapStatusFrame:RegisterEvent("UNIT_FACTION")
+	TapStatusFrame:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+	TapStatusFrame:SetScript("OnEvent", function(self, event, unit)
+		if unit == "target" and TargetFrame and TargetFrame.healthbar then
+			UnitFramesImproved_TargetFrame_Update(TargetFrame)
+		elseif unit == "focus" and FocusFrame and FocusFrame.healthbar then
+			-- Reuse the same logic for focus
+			if FocusFrame.healthbar then
+				if ( not UnitPlayerControlled(FocusFrame.unit) and UnitIsTapped(FocusFrame.unit) and not UnitIsTappedByPlayer(FocusFrame.unit) and not UnitIsTappedByAllThreatList(FocusFrame.unit) ) then
+					FocusFrame.healthbar:SetStatusBarColor(0.5, 0.5, 0.5)
+				else
+					FocusFrame.healthbar:SetStatusBarColor(UnitColor(FocusFrame.healthbar.unit))
+				end
+			end
+		end
+	end)
 end
 
+
+
 function UnitFramesImproved_Style_PlayerFrame()
+    InitCharacterSettings() -- Safety if this function ever uses StatusText settings
 	if not InCombatLockdown() then 
 		PlayerFrameHealthBar.lockColor = true;
 		PlayerFrameHealthBar.capNumericDisplay = true;
@@ -162,13 +208,10 @@ function UnitFramesImproved_Style_PlayerFrame()
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",106,-22);
 		PlayerFrameHealthBarText:SetPoint("CENTER",50,6);
 	end
-	
-	PlayerFrameTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-TargetingFrame");
-	PlayerStatusTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-Player-Status");
-	PlayerFrameHealthBar:SetStatusBarColor(UnitColor("player"));
-	
-                 for i,v in pairs({
-
+    PlayerFrameTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-TargetingFrame");
+    PlayerStatusTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-Player-Status");
+    
+	for i,v in pairs({
 		PlayerFrameTexture,
    		TargetFrameTextureFrameTexture,
   		PetFrameTexture,
@@ -183,21 +226,18 @@ function UnitFramesImproved_Style_PlayerFrame()
    		FocusFrameTextureFrameTexture,
    		TargetFrameToTTextureFrameTexture,
    		FocusFrameToTTextureFrameTexture,
-   		
 		CastingBarFrameBorder,
 		FocusFrameSpellBarBorder,
 		TargetFrameSpellBarBorder,
-	
-
               }) do
-  
                  v:SetVertexColor(.05, .05, .05)
-		
 	end  
-
+    -- FIXED: Force class color on player frame
+    PlayerFrameHealthBar:SetStatusBarColor(UnitColor("player"));
 end
 
 function UnitFramesImproved_Style_TargetFrame(self)
+    InitCharacterSettings()
 	if not InCombatLockdown() then 
 		self.healthbar.lockColor = true;
 		self.healthbar:SetWidth(119);
@@ -211,8 +251,8 @@ function UnitFramesImproved_Style_TargetFrame(self)
 end
 
 function UnitFramesImproved_BossTargetFrame_Style(self)
+    InitCharacterSettings()
 	self.borderTexture:SetTexture("Interface\\Addons\\UnitFramesImproved\\Textures\\UI-UnitFrame-Boss");
-
 	UnitFramesImproved_Style_TargetFrame(self);
 	if (not (characterSettings["FrameScale"] == nil)) then
 		if not InCombatLockdown() then 
@@ -222,28 +262,22 @@ function UnitFramesImproved_BossTargetFrame_Style(self)
 end
 
 function UnitFramesImproved_SetFrameScale(scale)
+    InitCharacterSettings()
 	if not InCombatLockdown() then 
-		-- Scale the main frames
 		PlayerFrame:SetScale(scale);
 		TargetFrame:SetScale(scale);
 		FocusFrame:SetScale(scale);
-		
-		-- Scale sub-frames
 		ComboFrame:SetScale(scale);
-		--RuneFrame:SetScale(scale); -- Can't do this as it messes up the scale horribly
 		RuneButtonIndividual1:SetScale(scale);
 		RuneButtonIndividual2:SetScale(scale);
 		RuneButtonIndividual3:SetScale(scale);
 		RuneButtonIndividual4:SetScale(scale);
 		RuneButtonIndividual5:SetScale(scale);
 		RuneButtonIndividual6:SetScale(scale);
-		
-		-- Scale the BossFrames
 		Boss1TargetFrame:SetScale(scale*0.9);
 		Boss2TargetFrame:SetScale(scale*0.9);
 		Boss3TargetFrame:SetScale(scale*0.9);
 		Boss4TargetFrame:SetScale(scale*0.9);
-		
 		characterSettings["FrameScale"] = scale;
 	end
 end
@@ -302,28 +336,85 @@ end
 -- Call this function during the PLAYER_LOGIN or ADDON_LOADED event
 InitializeFocusFrameCustomization()
 
--- Slashcommand stuff
+-- StatusText Slash Commands
 SLASH_UNITFRAMESIMPROVED1 = "/unitframesimproved";
 SLASH_UNITFRAMESIMPROVED2 = "/ufi";
-SlashCmdList["UNITFRAMESIMPROVED"] = function(msg, editBox)
-	local tokens = tokenize(msg);
-	if(table.getn(tokens) > 0 and strlower(tokens[1]) == "reset") then
-		StaticPopup_Show("LAYOUT_RESET");
-	elseif(table.getn(tokens) > 0 and strlower(tokens[1]) == "settings") then
-		InterfaceOptionsFrame_OpenToCategory(UnitFramesImproved.panelSettings);
-	elseif(table.getn(tokens) > 0 and strlower(tokens[1]) == "scale") then
-		if(table.getn(tokens) > 1) then
-			UnitFramesImproved_SetFrameScale(tokens[2]);
-		else
-			dout("Please supply a number, between 0.0 and 10.0 as the second parameter.");
-		end
-	else
-		dout("Valid commands for UnitFramesImproved are:")
-		dout("    help    (shows this message)");
-		dout("    scale # (scales the player frames)");
-		dout("    reset   (resets the scale of the player frames)");
-		dout("");
-	end
+
+SlashCmdList["UNITFRAMESIMPROVED"] = function(msg)
+	InitCharacterSettings() -- MUST be first
+    local cmd = strlower(trim(msg or ""))
+    
+    if cmd == "short" or cmd == "shortnumeric" then
+        characterSettings.StatusText.ShortNumeric = not characterSettings.StatusText.ShortNumeric
+        dout("StatusText: Short numeric format " .. (characterSettings.StatusText.ShortNumeric and "ENABLED" or "DISABLED"))
+        dout("  Example: " .. (characterSettings.StatusText.ShortNumeric and "15.2k (100%)" or "15234 (100%)"))
+    elseif cmd == "percent" or cmd == "showpercent" then
+        characterSettings.StatusText.ShowPercent = not characterSettings.StatusText.ShowPercent
+        dout("StatusText: Percent display " .. (characterSettings.StatusText.ShowPercent and "ENABLED" or "DISABLED"))
+        if characterSettings.StatusText.ShowPercent then
+            dout("  Format: Value (Percent%)  e.g., 15k (100%)")
+        else
+            dout("  Format: Value / Max  e.g., 15234 / 15500")
+        end
+    elseif cmd == "max" or cmd == "showmax" then
+        characterSettings.StatusText.ShowMax = not characterSettings.StatusText.ShowMax
+        dout("StatusText: Max value display " .. (characterSettings.StatusText.ShowMax and "ENABLED" or "DISABLED"))
+    elseif cmd == "reset" then
+        characterSettings.StatusText.ShortNumeric = true
+        characterSettings.StatusText.ShowPercent = true
+        characterSettings.StatusText.ShowMax = true
+        dout("StatusText: Settings reset to defaults")
+        dout("  ShortNumeric: ON | ShowPercent: ON | ShowMax: ON")
+    elseif cmd == "" or cmd == "help" then
+		dout("UnitFramesImproved Commands:")
+		dout("  /ufi short      - Toggle short numeric (1k vs 1000)")
+		dout("  /ufi percent    - Toggle percent display (adds (100%))")
+		dout("  /ufi max        - Toggle / Max display (1000 / 1000)")
+		dout("  /ufi scale #    - Set frame scale (0.5 to 2.0)")
+		dout("  /ufi reset      - Reset all StatusText settings")
+		dout("  /ufi help       - Show this help")
+		dout("")
+		dout("Current settings:")
+		dout("  ShortNumeric: " .. (characterSettings.StatusText.ShortNumeric and "ON" or "OFF"))
+		dout("  ShowPercent:  " .. (characterSettings.StatusText.ShowPercent and "ON" or "OFF"))
+		dout("  ShowMax:      " .. (characterSettings.StatusText.ShowMax and "ON" or "OFF"))
+		dout("  FrameScale:   " .. (characterSettings["FrameScale"] or "1.0"))
+    else
+        local tokens = tokenize(msg)
+        if table.getn(tokens) > 0 then
+            local subcmd = strlower(tokens[1])
+            if subcmd == "scale" then
+                if table.getn(tokens) > 1 then
+                    UnitFramesImproved_SetFrameScale(tokens[2])
+                else
+                    dout("Please supply a number, between 0.0 and 10.0 as the second parameter.")
+                end
+            elseif subcmd == "reset" and tokens[2] == nil then
+                StaticPopup_Show("LAYOUT_RESET");
+            elseif subcmd == "settings" then
+                if InterfaceOptionsFrame_OpenToCategory then
+                    InterfaceOptionsFrame_OpenToCategory("UnitFramesImproved")
+                end
+            else
+                dout("Unknown command. Type /ufi help for StatusText options.")
+                dout("Other UFI commands: /ufi scale # | /ufi reset | /ufi settings")
+            end
+        else
+            dout("Unknown command. Type /ufi help for options.")
+        end
+    end
+    
+    -- Force refresh all bars
+    for _, barName in ipairs({
+        "PlayerFrameHealthBar", "PlayerFrameManaBar",
+        "TargetFrameHealthBar", "TargetFrameManaBar",
+        "FocusFrameHealthBar", "FocusFrameManaBar",
+    }) do
+        local bar = _G[barName]
+        if bar and bar.TextString then
+            UnitFramesImproved_TextStatusBar_UpdateTextString(bar)
+        end
+    end
 end
 
 -- Setup the static popup dialog for resetting the UI
@@ -352,64 +443,82 @@ StaticPopupDialogs["LAYOUT_RESETDEFAULT"] = {
 	hideOnEscape = true
 }
 
-function UnitFramesImproved_TextStatusBar_UpdateTextString(textStatusBar)
-	local textString = textStatusBar.TextString;
-	if(textString) then
-		local value = textStatusBar:GetValue();
-		local valueMin, valueMax = textStatusBar:GetMinMaxValues();
-
-		if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( textStatusBar.pauseUpdates ) ) then
-			textStatusBar:Show();
-			if ( value and valueMax > 0 and ( GetCVarBool("statusTextPercentage") or textStatusBar.showPercentage ) and not textStatusBar.showNumeric) then
-				if ( value == 0 and textStatusBar.zeroText ) then
-					textString:SetText(textStatusBar.zeroText);
-					textStatusBar.isZero = 1;
-					textString:Show();
-					return;
-				end
-				value = tostring(math.ceil((value / valueMax) * 100)) .. "%";
-				--[[if ( textStatusBar.prefix and (textStatusBar.alwaysPrefix or not (textStatusBar.cvar and GetCVar(textStatusBar.cvar) == "1" and textStatusBar.textLockable) ) ) then
-					textString:SetText(textStatusBar.prefix.." "..UnitFramesImproved_CapDisplayOfNumericValue(textStatusBar:GetValue()).." ("..value..")");
-				else
-					textString:SetText(UnitFramesImproved_CapDisplayOfNumericValue(textStatusBar:GetValue()).." ("..value..")");
-				end]]
-			elseif ( value == 0 and textStatusBar.zeroText ) then
-				textString:SetText(textStatusBar.zeroText);
-				textStatusBar.isZero = 1;
-				textString:Show();
-				return;
-			else
-				textStatusBar.isZero = nil;
-				--local percent = tostring(math.ceil((value / valueMax) * 100)) .. "%";
-				--[[if ( textStatusBar.capNumericDisplay ) then
-					value = UnitFramesImproved_CapDisplayOfNumericValue(value);
-					valueMax = UnitFramesImproved_CapDisplayOfNumericValue(valueMax);
-				end ]]
-				if ( textStatusBar.prefix and (textStatusBar.alwaysPrefix or not (textStatusBar.cvar and GetCVar(textStatusBar.cvar) == "1" and textStatusBar.textLockable) ) ) then
-					textString:SetText(textStatusBar.prefix.." "..value.."/"..valueMax);
-				else
-					textString:SetText(value.."/"..valueMax);
-				end
-			end
-			
-			if ( (textStatusBar.cvar and GetCVar(textStatusBar.cvar) == "1" and textStatusBar.textLockable) or textStatusBar.forceShow ) then
-				textString:Show();
-			elseif ( textStatusBar.lockShow > 0 and (not textStatusBar.forceHideText) ) then
-				textString:Show();
-			else
-				textString:Hide();
-			end
-		else
-			textString:Hide();
-			textString:SetText("");
-			--[[if ( not textStatusBar.alwaysShow ) then
-				textStatusBar:Hide();
-			else
-				textStatusBar:SetValue(0);
-			end ]]
-		end
-	end
+-- Helper: Short numeric format
+local function ShortValue(val)
+    if not val then return 0 end
+    if val >= 1000000 then
+        return string.format("%.1fm", val / 1000000)
+    elseif val >= 1000 then
+        return string.format("%.1fk", val / 1000)
+    else
+        return val
+    end
 end
+
+-- Helper: Round to nearest integer
+local function round(value)
+    return math.floor(value + 0.5)
+end
+
+-- Main text update function - FIXED formatting logic
+function UnitFramesImproved_TextStatusBar_UpdateTextString(textStatusBar)
+    InitCharacterSettings()
+    
+    local textString = textStatusBar.TextString
+    if not textString then return end
+    
+    local value = textStatusBar.finalValue or textStatusBar:GetValue()
+    local _, valueMax = textStatusBar:GetMinMaxValues()
+    
+    if not valueMax or valueMax == 0 then
+        textString:Hide()
+        return
+    end
+
+    local unit = textStatusBar.unit
+    if unit and (UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
+        textString:SetText(UnitIsDead(unit) and "Dead" or "Offline")
+        textString:Show()
+        return
+    end
+
+    local settings = characterSettings.StatusText
+    
+    -- Format value and max independently based on ShortNumeric setting
+    local displayValue = settings.ShortNumeric and ShortValue(value) or value
+    local displayMax = settings.ShortNumeric and ShortValue(valueMax) or valueMax
+    
+    -- Start with base value
+    local text = tostring(displayValue)
+    
+    -- Add / Max if ShowMax is enabled (INDEPENDENT of other settings)
+    if settings.ShowMax then
+        text = string.format("%s / %s", text, displayMax)
+    end
+    
+    -- Add (Percent%) if ShowPercent is enabled (INDEPENDENT of other settings)
+    if settings.ShowPercent then
+        local percent = round((value / valueMax) * 100)
+        text = string.format("%s (%d%%)", text, percent)
+    end
+    
+    -- Handle zero power bars (Rage/Energy at 0) - still respect settings
+    if value == 0 and textStatusBar ~= textStatusBar:GetParent().healthbar then
+        local displayMaxZero = settings.ShortNumeric and ShortValue(valueMax) or valueMax
+        if settings.ShowMax then
+            text = string.format("0 / %s", displayMaxZero)
+        else
+            text = "0"
+        end
+        if settings.ShowPercent then
+            text = string.format("%s (0%%)", text)
+        end
+    end
+    
+    textString:SetText(text)
+    textString:Show()
+end
+
 
 function UnitFramesImproved_PlayerFrame_ToPlayerArt(self)
 	if not InCombatLockdown() then
@@ -425,12 +534,9 @@ function UnitFramesImproved_PlayerFrame_ToVehicleArt(self)
 end
 
 function UnitFramesImproved_TargetFrame_Update(self)
-	-- Set back color of health bar
 	if ( not UnitPlayerControlled(self.unit) and UnitIsTapped(self.unit) and not UnitIsTappedByPlayer(self.unit) and not UnitIsTappedByAllThreatList(self.unit) ) then
-		-- Gray if npc is tapped by other player
 		self.healthbar:SetStatusBarColor(0.5, 0.5, 0.5);
 	else
-		-- Standard by class etc if not
 		self.healthbar:SetStatusBarColor(UnitColor(self.healthbar.unit));
 	end
 end
@@ -487,39 +593,40 @@ end
 
 -- Utility functions
 function UnitColor(unit)
-    local r, g, b;
-
-    -- Ensure the unit exists before proceeding
-    if not UnitExists(unit) then
-        return 0.5, 0.5, 0.5; -- Default to gray for invalid units
+    -- Always return gray for invalid units
+    if not UnitExists(unit) then 
+        return 0.5, 0.5, 0.5 
     end
-
-    -- Check if the unit is disconnected, dead, or a ghost
-    if (not UnitIsPlayer(unit)) and ((not UnitIsConnected(unit)) or (UnitIsDeadOrGhost(unit))) then
-        -- Color it gray
-        r, g, b = 0.5, 0.5, 0.5;
-    elseif UnitIsPlayer(unit) and UnitExists(unit) and not UnitIsDead(unit) and not UnitIsDeadOrGhost(unit) and not UnitIsGhost(unit) and UnitIsConnected(unit) and UnitIsFriend("player", unit) then
-        -- Try to color it by class
-        local _, englishClass = UnitClass(unit);
-        local classColor = RAID_CLASS_COLORS[englishClass];
-        if classColor then
-            r, g, b = classColor.r, classColor.g, classColor.b;
-        else
-            if UnitIsFriend("player", unit) or UnitIsFriend("pet", unit) then
-                r, g, b = 0.0, 1.0, 0.0; -- Green for friendly NPCs
-            else
-                r, g, b = 1.0, 0.0, 0.0; -- Red for hostile NPCs
-            end
+    
+    -- DEAD/DISCONNECTED: Gray
+    if UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit) then
+        return 0.5, 0.5, 0.5
+    end
+    
+    -- TAPPED BY OTHER PLAYER: Gray (CRITICAL FIX)
+    if not UnitPlayerControlled(unit) and UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) and not UnitIsTappedByAllThreatList(unit) then
+        return 0.5, 0.5, 0.5
+    end
+    
+    -- PLAYERS: Class color
+    if UnitIsPlayer(unit) then
+        local _, englishClass = UnitClass(unit)
+        if englishClass and RAID_CLASS_COLORS and RAID_CLASS_COLORS[englishClass] then
+            local c = RAID_CLASS_COLORS[englishClass]
+            return c.r, c.g, c.b
         end
-    else
-        -- Use default selection color
-        r, g, b = UnitSelectionColor(unit);
     end
-
-    return r, g, b;
+    
+    -- NPCs: Reaction color
+    if UnitIsFriend("player", unit) then
+        return 0.0, 1.0, 0.0  -- Green for friendly
+    elseif UnitIsEnemy("player", unit) then
+        return 1.0, 0.0, 0.0  -- Red for hostile
+    end
+    
+    return 1.0, 1.0, 0.0  -- Yellow for neutral
 end
 
--- Party class color
 local function UpdatePartyFramesColor()
     for i = 1, MAX_PARTY_MEMBERS do
         local frameName = "PartyMemberFrame" .. i
@@ -528,11 +635,10 @@ local function UpdatePartyFramesColor()
             local healthBar = _G[frameName .. "HealthBar"]
             if healthBar then
                 local unit = "party" .. i
-                if UnitExists(unit) then -- Ensure the unit exists
+                if UnitExists(unit) then
                     local r, g, b = UnitColor(unit)
                     healthBar:SetStatusBarColor(r, g, b)
                 else
-                    -- If the unit doesn't exist, reset the color to gray
                     healthBar:SetStatusBarColor(0.5, 0.5, 0.5)
                 end
             end
@@ -540,40 +646,13 @@ local function UpdatePartyFramesColor()
     end
 end
 
--- Register events to handle party frame updates
 local partyFrameUpdater = CreateFrame("Frame")
 partyFrameUpdater:RegisterEvent("PARTY_MEMBERS_CHANGED")
 partyFrameUpdater:RegisterEvent("GROUP_ROSTER_UPDATE")
 partyFrameUpdater:SetScript("OnEvent", function()
     UpdatePartyFramesColor()
 end)
-
--- Initial call to apply colors when the addon loads
 UpdatePartyFramesColor()
-
-
---[[ function UnitFramesImproved_CapDisplayOfNumericValue(value)
-	local strLen = strlen(value);
-	local retString = value;
-	if (true) then
-		if ( strLen >= 10 ) then
-			retString = string.sub(value, 1, -10).."."..string.sub(value, -9, -9).."G";
-		elseif ( strLen >= 7 ) then
-			retString = string.sub(value, 1, -7).."."..string.sub(value, -6, -6).."M";
-		elseif ( strLen >= 4 ) then
-			retString = string.sub(value, 1, -4).."."..string.sub(value, -3, -3).."k";
-		end
-	else
-		if ( strLen >= 10 ) then
-			retString = string.sub(value, 1, -10).."G";
-		elseif ( strLen >= 7 ) then
-			retString = string.sub(value, 1, -7).."M";
-		elseif ( strLen >= 4 ) then
-			retString = string.sub(value, 1, -4).."k";
-		end
-	end
-	return retString;
-end  ]]
 
 -- Bootstrap
 function UnitFramesImproved_StartUp(self)
@@ -588,12 +667,10 @@ UnitFramesImproved_StartUp(UnitFramesImproved);
 function print_r (t, indent, done)
   done = done or {}
   indent = indent or ''
-  local nextIndent -- Storage for next indentation value
+  local nextIndent
   for key, value in pairs (t) do
     if type (value) == "table" and not done [value] then
-      nextIndent = nextIndent or
-          (indent .. string.rep(' ',string.len(tostring (key))+2))
-          -- Shortcut conditional allocation
+      nextIndent = nextIndent or (indent .. string.rep(' ',string.len(tostring (key))+2))
       done [value] = true
       print (indent .. "[" .. tostring (key) .. "] => Table {");
       print  (nextIndent .. "{");
