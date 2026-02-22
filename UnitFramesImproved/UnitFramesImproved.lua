@@ -264,7 +264,7 @@ function UnitFramesImproved_Style_TargetFrame(self)
 		self.healthbar:SetHeight(29);
 		self.healthbar:SetPoint("TOPLEFT",7,-22);
 		self.healthbar.TextString:SetPoint("CENTER",-50,6);
-		self.deadText:SetPoint("CENTER",-50,6);
+		self.deadText:SetPoint("CENTER",-50,13);
 		self.nameBackground:Hide();
 		for i=1,4 do _G["PartyMemberFrame"..i.."PVPIcon"]:Hide()end
 	end
@@ -497,8 +497,8 @@ function UnitFramesImproved_TextStatusBar_UpdateTextString(textStatusBar)
 
     local unit = textStatusBar.unit
     if unit and (UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
-        textString:SetText(UnitIsDead(unit) and "Dead" or "Offline")
-        textString:Show()
+        -- textString:SetText(UnitIsDead(unit) and "Dead" or "Offline")
+        textString:Hide()
         return
     end
 
