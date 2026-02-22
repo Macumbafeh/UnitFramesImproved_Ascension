@@ -201,8 +201,8 @@ end
 function UnitFramesImproved_Style_PlayerFrame()
     InitCharacterSettings() -- Safety if this function ever uses StatusText settings
 	if not InCombatLockdown() then 
-		PlayerFrameHealthBar.lockColor = true;
-		PlayerFrameHealthBar.capNumericDisplay = true;
+		-- PlayerFrameHealthBar.lockColor = true;
+		-- PlayerFrameHealthBar.capNumericDisplay = true;
 		PlayerFrameHealthBar:SetWidth(115);
 		PlayerFrameHealthBar:SetHeight(29);
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",106,-22);
@@ -232,8 +232,28 @@ function UnitFramesImproved_Style_PlayerFrame()
               }) do
                  v:SetVertexColor(.05, .05, .05)
 	end  
-    -- FIXED: Force class color on player frame
-    PlayerFrameHealthBar:SetStatusBarColor(UnitColor("player"));
+    if not UnitFramesImproved_PlayerHealthBarHooked then
+        hooksecurefunc("UnitFrameHealthBar_Update", function(self, unit)
+            if self == PlayerFrameHealthBar and unit == "player" then
+                local r, g, b = UnitColor("player")
+                self:SetStatusBarColor(r, g, b)
+            end
+        end)
+        
+        -- Also hook OnValueChanged just in case smooth bars bypass the Update call
+        hooksecurefunc(PlayerFrameHealthBar, "SetValue", function(self)
+            if self:GetParent() == PlayerFrame then
+                local r, g, b = UnitColor("player")
+                self:SetStatusBarColor(r, g, b)
+            end
+        end)
+        
+        UnitFramesImproved_PlayerHealthBarHooked = true
+    end
+    
+    -- Initial apply
+    local r, g, b = UnitColor("player")
+    PlayerFrameHealthBar:SetStatusBarColor(r, g, b)
 end
 
 function UnitFramesImproved_Style_TargetFrame(self)
