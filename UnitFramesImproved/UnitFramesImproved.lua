@@ -496,9 +496,13 @@ function UnitFramesImproved_TextStatusBar_UpdateTextString(textStatusBar)
     end
 
     local unit = textStatusBar.unit
-    if unit and (UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
+    if unit and (UnitIsDead(unit) or UnitIsGhost(unit)) then
         -- textString:SetText(UnitIsDead(unit) and "Dead" or "Offline")
         textString:Hide()
+		return
+	elseif unit and not UnitIsConnected(unit) then 
+		textString:SetText("Offline")
+		textString:Show()
         return
     end
 
